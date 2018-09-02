@@ -11,3 +11,103 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+
+export EDITOR=vim
+
+export ANDROID_HOME=/Users/bebader/Library/Android/sdk
+export ANDROID_TOOLS=$ANDROID_HOME/tools
+export ANDROID_PLATFORM_TOOLS=$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_TOOLS:$ANDROID_PLATFORM_TOOLS
+
+# Put Sublime Text on the path
+export PATH=$PATH:/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
+
+# Go stuff
+export GOPATH=$HOME/Development/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN
+
+# Git and related aliases
+
+git config --global alias.br branch
+git config --global alias.co checkout
+git config --global alias.cp cherry-pick
+
+alias gap='git add -p'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gs='git status'
+alias gri='git rebase --interactive'
+alias grc='git rebase --continue'
+alias gb='git branch'
+alias go='git checkout'
+
+function dump-cer() {
+  openssl x509 -inform der -outform der -in "$1" | openssl asn1parse -inform der -i
+}
+
+# added by travis gem
+[ -f /Users/bebader/.travis/travis.sh ] && source /Users/bebader/.travis/travis.sh
+
+[ -s "/Users/bebader/.dnx/dnvm/dnvm.sh" ] && . "/Users/bebader/.dnx/dnvm/dnvm.sh" # Load dnvm
+
+# add local scripts to path
+export PATH=$PATH:/Users/bebader/opt
+
+function count-dex-methods() {
+  file="$1"
+  count=$(head -c 92 "$file" | tail -c 4 | hexdump -e '1/4 "%d\n"')
+  echo $count
+}
+
+
+# tabtab source for yo package
+# uninstall by removing these lines or running `tabtab uninstall yo`
+[[ -f /usr/local/lib/node_modules/yo/node_modules/tabtab/.completions/yo.zsh ]] && . /usr/local/lib/node_modules/yo/node_modules/tabtab/.completions/yo.zsh
+
+# OCaml stuff
+. /Users/bebader/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
+
+# GnuPG magic
+export GPG_TTY=$(tty)
+
+# ANTLR v4
+export PATH="$PATH:/Users/bebader/opt/antlr"
+export CLASSPATH=".:/Users/bebader/opt/antlr/antlr-4.6-complete.jar:$CLASSPATH"
+alias antlr4="java -jar /Users/bebader/opt/antlr/antlr-4.6-complete.jar"
+alias grun="java org.antlr.v4.gui.TestRig"
+alias gi=git
+
+# Sierra broke SSH-Agent <-> Keychain >:/
+ssh-add -A 
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+export GITHUB_TOKEN=f24d334b2d1005fb3d59378d6ac94ff25c9cb5fe
+
+# Add "cargo install" binaries to PATH
+export PATH="$PATH:/Users/bebader/.cargo/bin"
+
+# JWT stuff
+decode_base64_url() {
+  local len=$((${#1} % 4))
+  local result="$1"
+  if [ $len -eq 2 ]; then result="$1"'=='
+  elif [ $len -eq 3 ]; then result="$1"'='
+  fi
+  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
+}
+
+decode_jwt(){
+   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+}
+
+# Decode JWT header
+alias jwth="decode_jwt 1"
+
+# Decode JWT Payload
+alias jwtp="decode_jwt 2"
+
+# .net core stuff
+export PATH="$PATH:/Users/bebader/.dotnet/tools"
